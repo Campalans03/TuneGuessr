@@ -27,6 +27,9 @@ public class GameSession {
     @Builder.Default
     private RoundStatus roundStatus = RoundStatus.PLAYING;
 
+    /// This method is used to process a guess made by the player.
+    /// It checks if the guess is correct, updates the round status,
+    /// and returns a GuessResult object containing the outcome of the guess.
     public GuessResult guess(String guessText) {
         boolean correct = guessMatcher.isGuessCorrect(guessText, song.title());
 
@@ -47,6 +50,8 @@ public class GameSession {
         return new GuessResult(roundStatus, 0, null);
     }
 
+    /// This method is used to skip the current snippet and move to the next one.
+    /// If the player has already used all available snippets, it sets the round status to LOST.
     public void skip() {
         if(attempts.size() < SNIPPET_SECONDS.length - 1) {
             attempts.add(new Attempt(currentSnippetSeconds, null, false));

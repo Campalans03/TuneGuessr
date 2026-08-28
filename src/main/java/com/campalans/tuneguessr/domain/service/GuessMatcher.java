@@ -3,6 +3,9 @@ package com.campalans.tuneguessr.domain.service;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
+/// This class is responsible for matching user guesses against the correct answer,
+/// taking into account various factors such as case insensitivity, whitespace normalization,
+/// and ignoring certain characters like parentheses and accents that may be given by the API.
 public class GuessMatcher {
 
     private static final Pattern PARENTHESIS = Pattern.compile("\\([^)]*\\)|\\[[^]]*]");
