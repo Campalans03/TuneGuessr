@@ -1,4 +1,4 @@
-package com.campalans.tuneguessr.service;
+package com.campalans.tuneguessr.domain.service;
 
 import java.text.Normalizer;
 

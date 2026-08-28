@@ -1,5 +1,6 @@
 package com.campalans.tuneguessr.service;
 
+import com.campalans.tuneguessr.domain.service.ScoringPolicy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

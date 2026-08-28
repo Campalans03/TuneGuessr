@@ -1,5 +1,6 @@
 package com.campalans.tuneguessr.service;
 
+import com.campalans.tuneguessr.domain.service.GuessMatcher;
 import org.junit.jupiter.api.Test;
 
 public class GuessMatcherTest {
