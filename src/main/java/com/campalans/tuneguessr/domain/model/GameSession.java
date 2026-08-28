@@ -46,4 +46,13 @@ public class GameSession {
 
         return new GuessResult(roundStatus, 0, null);
     }
+
+    public void skip() {
+        if(attempts.size() < SNIPPET_SECONDS.length - 1) {
+            attempts.add(new Attempt(currentSnippetSeconds, null, false));
+            currentSnippetSeconds = SNIPPET_SECONDS[attempts.size()];
+        } else {
+            roundStatus = RoundStatus.LOST;
+        }
+    }
 }

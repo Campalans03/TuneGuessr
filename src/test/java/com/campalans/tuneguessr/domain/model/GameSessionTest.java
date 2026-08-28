@@ -50,6 +50,24 @@ public class GameSessionTest {
         assertEquals("Song Title", result.correctAnswerTitle());
     }
 
+    @Test
+    void pressing_skip_button_leads_to_next_snippet() {
+        GameSession session = newSession();
+        session.skip();
+        assertEquals(2, session.getCurrentSnippetSeconds());
+    }
+
+    @Test
+    void pressing_skip_button_in_last_try_ends_the_game() {
+        GameSession session = newSession();
+        session.skip();
+        session.skip();
+        session.skip();
+        session.skip();
+        session.skip();
+        assertEquals(RoundStatus.LOST, session.getRoundStatus());
+    }
+
     private GameSession newSession() {
         return GameSession.builder()
                 .song(song)
