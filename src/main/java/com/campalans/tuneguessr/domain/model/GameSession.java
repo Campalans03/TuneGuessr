@@ -55,4 +55,8 @@ public class GameSession {
             roundStatus = RoundStatus.LOST;
         }
     }
+
+    public void giveUp() {
+        roundStatus = RoundStatus.LOST;
+    }
 }

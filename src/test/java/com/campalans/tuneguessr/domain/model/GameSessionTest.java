@@ -68,6 +68,22 @@ public class GameSessionTest {
         assertEquals(RoundStatus.LOST, session.getRoundStatus());
     }
 
+    @Test
+    void pressing_give_up_button_ends_the_game() {
+        GameSession session = newSession();
+        session.giveUp();
+        assertEquals(RoundStatus.LOST, session.getRoundStatus());
+    }
+
+    @Test
+    void pressing_give_up_button_after_some_attempts_ends_the_game() {
+        GameSession session = newSession();
+        session.guess("Wrong Song Title");
+        session.guess("Wrong Song Title");
+        session.giveUp();
+        assertEquals(RoundStatus.LOST, session.getRoundStatus());
+    }
+
     private GameSession newSession() {
         return GameSession.builder()
                 .song(song)
