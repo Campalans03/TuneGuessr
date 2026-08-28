@@ -18,6 +18,8 @@ public class GameSession {
     private final GuessMatcher guessMatcher;
     private final ScoringPolicy scoringPolicy;
 
+    private static final int[] SNIPPET_SECONDS = {1, 2, 4, 8, 10};
+
     @Builder.Default
     private final List<Attempt> attempts = new ArrayList<>();
     @Builder.Default
@@ -33,6 +35,15 @@ public class GameSession {
             return new GuessResult(roundStatus, scoringPolicy.calculateScore(attempts.size()), song.title());
         }
 
-        throw new UnsupportedOperationException("TODO: fallo");
+        attempts.add(new Attempt(currentSnippetSeconds, guessText, false));
+
+        if(attempts.size() == SNIPPET_SECONDS.length) {
+            roundStatus = RoundStatus.LOST;
+            return new GuessResult(roundStatus, 0, song.title());
+        }
+
+        currentSnippetSeconds = SNIPPET_SECONDS[attempts.size()];
+
+        return new GuessResult(roundStatus, 0, null);
     }
 }

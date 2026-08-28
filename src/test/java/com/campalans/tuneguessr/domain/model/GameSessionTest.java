@@ -5,6 +5,7 @@ import com.campalans.tuneguessr.domain.service.ScoringPolicy;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GameSessionTest {
 
@@ -23,6 +24,30 @@ public class GameSessionTest {
         GuessResult result = session.guess("Song Title");
         assertEquals(RoundStatus.WON, result.roundStatus());
         assertEquals(100, result.score());
+    }
+
+    @Test
+    void guessing_wrong_song_in_first_try_keeps_playing_with_more_snippet() {
+        GameSession session = newSession();
+        GuessResult result = session.guess("Wrong Song Title");
+
+        assertEquals(RoundStatus.PLAYING, result.roundStatus());
+        assertEquals(2, session.getCurrentSnippetSeconds());
+        assertNull(result.correctAnswerTitle());
+    }
+
+    @Test
+    void guessing_wrong_song_in_last_try_ends_the_game() {
+        GameSession session = newSession();
+        session.guess("Wrong Song Title");
+        session.guess("Wrong Song Title");
+        session.guess("Wrong Song Title");
+        session.guess("Wrong Song Title");
+        GuessResult result = session.guess("Wrong Song Title");
+
+        assertEquals(RoundStatus.LOST, result.roundStatus());
+        assertEquals(0, result.score());
+        assertEquals("Song Title", result.correctAnswerTitle());
     }
 
     private GameSession newSession() {
