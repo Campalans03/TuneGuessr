@@ -9,36 +9,36 @@ public class GuessMatcherTest {
 
     @Test
     void guess_is_correct_when_equals_ignore_case() {
-        assert(guessMatcher.isGuessCorrect("Hello", "hello"));
-        assert(guessMatcher.isGuessCorrect("HELLO", "hello"));
-        assert(guessMatcher.isGuessCorrect("hello", "hello"));
+        assert (guessMatcher.isGuessCorrect("Hello", "hello"));
+        assert (guessMatcher.isGuessCorrect("HELLO", "hello"));
+        assert (guessMatcher.isGuessCorrect("hello", "hello"));
     }
 
     @Test
     void guess_is_correct_when_equals_ignore_trim() {
-        assert(guessMatcher.isGuessCorrect("  Hello  ", "hello"));
-        assert(guessMatcher.isGuessCorrect("HELLO", " hello "));
-        assert(guessMatcher.isGuessCorrect("hello", "hello"));
+        assert (guessMatcher.isGuessCorrect("  Hello  ", "hello"));
+        assert (guessMatcher.isGuessCorrect("HELLO", " hello "));
+        assert (guessMatcher.isGuessCorrect("hello", "hello"));
     }
 
     @Test
     void guess_is_correct_when_equals_ignore_accents() {
-        assert(guessMatcher.isGuessCorrect("Héllo", "hello"));
-        assert(guessMatcher.isGuessCorrect("HELLO", "héllo"));
-        assert(guessMatcher.isGuessCorrect("hello", "hello"));
+        assert (guessMatcher.isGuessCorrect("Héllo", "hello"));
+        assert (guessMatcher.isGuessCorrect("HELLO", "héllo"));
+        assert (guessMatcher.isGuessCorrect("hello", "hello"));
     }
 
     @Test
     void guess_is_correct_when_equals_ignore_parenthesis() {
-        assert(guessMatcher.isGuessCorrect("Hello (world)", "hello"));
-        assert(guessMatcher.isGuessCorrect("HELLO [world]", "hello"));
-        assert(guessMatcher.isGuessCorrect("hello", "hello"));
+        assert (guessMatcher.isGuessCorrect("Hello (world)", "hello"));
+        assert (guessMatcher.isGuessCorrect("HELLO [world]", "hello"));
+        assert (guessMatcher.isGuessCorrect("hello", "hello"));
     }
 
     @Test
     void guess_is_correct_when_equals_ignore_multiple_spaces() {
-        assert(guessMatcher.isGuessCorrect("Hello   world", "hello world"));
-        assert(guessMatcher.isGuessCorrect("HELLO    world", "hello world"));
-        assert(guessMatcher.isGuessCorrect("hello world", "hello world"));
+        assert (guessMatcher.isGuessCorrect("Hello   world", "hello world"));
+        assert (guessMatcher.isGuessCorrect("HELLO    world", "hello world"));
+        assert (guessMatcher.isGuessCorrect("hello world", "hello world"));
     }
 }
