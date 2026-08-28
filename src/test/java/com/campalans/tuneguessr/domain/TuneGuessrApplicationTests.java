@@ -1,4 +1,4 @@
-package com.campalans.tuneguessr;
+package com.campalans.tuneguessr.domain;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

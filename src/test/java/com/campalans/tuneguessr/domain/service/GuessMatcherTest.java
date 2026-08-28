@@ -1,4 +1,4 @@
-package com.campalans.tuneguessr.service;
+package com.campalans.tuneguessr.domain.service;
 
 import com.campalans.tuneguessr.domain.service.GuessMatcher;
 import org.junit.jupiter.api.Test;
