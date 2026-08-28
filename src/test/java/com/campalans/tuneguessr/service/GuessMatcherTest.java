@@ -27,4 +27,18 @@ public class GuessMatcherTest {
         assert(guessMatcher.isGuessCorrect("HELLO", "héllo"));
         assert(guessMatcher.isGuessCorrect("hello", "hello"));
     }
+
+    @Test
+    void guess_is_correct_when_equals_ignore_parenthesis() {
+        assert(guessMatcher.isGuessCorrect("Hello (world)", "hello"));
+        assert(guessMatcher.isGuessCorrect("HELLO [world]", "hello"));
+        assert(guessMatcher.isGuessCorrect("hello", "hello"));
+    }
+
+    @Test
+    void guess_is_correct_when_equals_ignore_multiple_spaces() {
+        assert(guessMatcher.isGuessCorrect("Hello   world", "hello world"));
+        assert(guessMatcher.isGuessCorrect("HELLO    world", "hello world"));
+        assert(guessMatcher.isGuessCorrect("hello world", "hello world"));
+    }
 }
