@@ -4,7 +4,7 @@ import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 public class GuessMatcher {
-    private static final Pattern PARENTHESIS = Pattern.compile("\\([^)]*\\)|\\[[^]]*\\]");
+    private static final Pattern PARENTHESIS = Pattern.compile("\\([^)]*\\)|\\[[^]]*]");
     private static final Pattern MULTI_SPACE = Pattern.compile("\\s+");
 
     public boolean isGuessCorrect(String guess, String answer) {
