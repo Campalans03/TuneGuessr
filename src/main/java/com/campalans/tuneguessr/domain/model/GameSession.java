@@ -38,30 +38,29 @@ public class GameSession {
             return new GuessResult(roundStatus, scoringPolicy.calculateScore(attempts.size()), song.title());
         }
 
+        return recordFailedAttempt(guessText);
+    }
+
+    /// This method is used to skip the current snippet and move to the next one.
+    /// If the player has already used all available snippets, it sets the round status to LOST.
+    public GuessResult skip() {
+        return recordFailedAttempt(null);
+    }
+
+    public GuessResult giveUp() {
+        roundStatus = RoundStatus.LOST;
+        return new GuessResult(roundStatus, 0, song.title());
+    }
+
+    private GuessResult recordFailedAttempt(String guessText) {
         attempts.add(new Attempt(currentSnippetSeconds, guessText, false));
 
-        if(attempts.size() == SNIPPET_SECONDS.length) {
+        if (attempts.size() == SNIPPET_SECONDS.length) {
             roundStatus = RoundStatus.LOST;
             return new GuessResult(roundStatus, 0, song.title());
         }
 
         currentSnippetSeconds = SNIPPET_SECONDS[attempts.size()];
-
         return new GuessResult(roundStatus, 0, null);
-    }
-
-    /// This method is used to skip the current snippet and move to the next one.
-    /// If the player has already used all available snippets, it sets the round status to LOST.
-    public void skip() {
-        if(attempts.size() < SNIPPET_SECONDS.length - 1) {
-            attempts.add(new Attempt(currentSnippetSeconds, null, false));
-            currentSnippetSeconds = SNIPPET_SECONDS[attempts.size()];
-        } else {
-            roundStatus = RoundStatus.LOST;
-        }
-    }
-
-    public void giveUp() {
-        roundStatus = RoundStatus.LOST;
     }
 }
