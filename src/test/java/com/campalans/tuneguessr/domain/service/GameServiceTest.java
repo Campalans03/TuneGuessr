@@ -83,4 +83,52 @@ class GameServiceTest {
         verify(gameSessionRepositoryPort).save(session);
         verify(playerRepositoryPort).save(player);
     }
+
+    @Test
+    void giving_up_ends_the_round_and_updates_the_player() {
+        GameSession session = GameSession.builder()
+                .id(sessionId)
+                .playerId(playerId)
+                .song(song)
+                .guessMatcher(new GuessMatcher())
+                .scoringPolicy(new ScoringPolicy())
+                .build();
+
+        when(gameSessionRepositoryPort.findById(sessionId)).thenReturn(Optional.of(session));
+        when(playerRepositoryPort.findById(playerId)).thenReturn(Optional.of(player));
+
+        GuessResult result = gameService.giveUp(sessionId);
+
+        assertEquals(RoundStatus.LOST, result.roundStatus());
+        assertEquals(0, result.score());
+        assertEquals(0, player.getTotalScore());
+        assertTrue(player.getPlayedSongIds().contains(song.id()));
+        verify(gameSessionRepositoryPort).save(session);
+        verify(playerRepositoryPort).save(player);
+    }
+
+    @Test
+    void skipping_round_5_times_ends_the_game() {
+        GameSession session = GameSession.builder()
+                .id(sessionId)
+                .playerId(playerId)
+                .song(song)
+                .guessMatcher(new GuessMatcher())
+                .scoringPolicy(new ScoringPolicy())
+                .build();
+
+        when(gameSessionRepositoryPort.findById(sessionId)).thenReturn(Optional.of(session));
+        when(playerRepositoryPort.findById(playerId)).thenReturn(Optional.of(player));
+
+        gameService.skipRound(sessionId);
+        gameService.skipRound(sessionId);
+        gameService.skipRound(sessionId);
+        gameService.skipRound(sessionId);
+        GuessResult result = gameService.skipRound(sessionId);
+
+        assertEquals(RoundStatus.LOST, result.roundStatus());
+        assertEquals(0, result.score());
+        assertEquals(0, player.getTotalScore());
+        assertTrue(player.getPlayedSongIds().contains(song.id()));
+    }
 }

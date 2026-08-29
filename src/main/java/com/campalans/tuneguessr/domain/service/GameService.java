@@ -1,6 +1,8 @@
 package com.campalans.tuneguessr.domain.service;
 
 import com.campalans.tuneguessr.domain.model.*;
+import com.campalans.tuneguessr.domain.port.in.GiveUpUseCase;
+import com.campalans.tuneguessr.domain.port.in.SkipRoundUseCase;
 import com.campalans.tuneguessr.domain.port.in.StartGameUseCase;
 import com.campalans.tuneguessr.domain.port.in.SubmitGuessUseCase;
 import com.campalans.tuneguessr.domain.port.out.GameSessionRepositoryPort;
@@ -8,8 +10,9 @@ import com.campalans.tuneguessr.domain.port.out.PlayerRepositoryPort;
 import com.campalans.tuneguessr.domain.port.out.SongCatalogPort;
 
 import java.util.UUID;
+import java.util.function.Function;
 
-public class GameService implements StartGameUseCase, SubmitGuessUseCase {
+public class GameService implements StartGameUseCase, SubmitGuessUseCase, SkipRoundUseCase, GiveUpUseCase {
 
     private final SongCatalogPort songCatalogPort;
     private final PlayerRepositoryPort playerRepositoryPort;
@@ -53,6 +56,36 @@ public class GameService implements StartGameUseCase, SubmitGuessUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
 
         GuessResult result = session.guess(guessText);
+        gameSessionRepositoryPort.save(session);
+
+        if(result.roundStatus() != RoundStatus.PLAYING){
+            updatePlayerAfterRound(session, result);
+        }
+
+        return result;
+    }
+
+    @Override
+    public GuessResult giveUp(UUID sessionId) {
+        GameSession session = gameSessionRepositoryPort.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
+
+        GuessResult result = session.giveUp();
+        gameSessionRepositoryPort.save(session);
+
+        if(result.roundStatus() != RoundStatus.PLAYING){
+            updatePlayerAfterRound(session, result);
+        }
+
+        return result;
+    }
+
+    @Override
+    public GuessResult skipRound(UUID sessionId) {
+        GameSession session = gameSessionRepositoryPort.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
+
+        GuessResult result = session.skip();
         gameSessionRepositoryPort.save(session);
 
         if(result.roundStatus() != RoundStatus.PLAYING){
