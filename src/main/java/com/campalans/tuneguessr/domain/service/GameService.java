@@ -52,40 +52,24 @@ public class GameService implements StartGameUseCase, SubmitGuessUseCase, SkipRo
 
     @Override
     public GuessResult submitGuess(UUID sessionId, String guessText) {
-        GameSession session = gameSessionRepositoryPort.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
-
-        GuessResult result = session.guess(guessText);
-        gameSessionRepositoryPort.save(session);
-
-        if(result.roundStatus() != RoundStatus.PLAYING){
-            updatePlayerAfterRound(session, result);
-        }
-
-        return result;
+        return applyAction(sessionId, session -> session.guess(guessText));
     }
 
     @Override
     public GuessResult giveUp(UUID sessionId) {
-        GameSession session = gameSessionRepositoryPort.findById(sessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
-
-        GuessResult result = session.giveUp();
-        gameSessionRepositoryPort.save(session);
-
-        if(result.roundStatus() != RoundStatus.PLAYING){
-            updatePlayerAfterRound(session, result);
-        }
-
-        return result;
+        return applyAction(sessionId, GameSession::giveUp);
     }
 
     @Override
     public GuessResult skipRound(UUID sessionId) {
+        return applyAction(sessionId, GameSession::skip);
+    }
+
+    private GuessResult applyAction(UUID sessionId, Function<GameSession, GuessResult> action) {
         GameSession session = gameSessionRepositoryPort.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
 
-        GuessResult result = session.skip();
+        GuessResult result = action.apply(session);
         gameSessionRepositoryPort.save(session);
 
         if(result.roundStatus() != RoundStatus.PLAYING){
