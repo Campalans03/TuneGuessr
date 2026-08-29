@@ -14,6 +14,7 @@ import java.util.UUID;
 public class GameSession {
 
     private final UUID id;
+    private final UUID playerId;
     private final Song song;
     private final GuessMatcher guessMatcher;
     private final ScoringPolicy scoringPolicy;

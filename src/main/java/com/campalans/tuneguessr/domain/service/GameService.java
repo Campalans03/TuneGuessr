@@ -1,16 +1,15 @@
 package com.campalans.tuneguessr.domain.service;
 
-import com.campalans.tuneguessr.domain.model.GameSession;
-import com.campalans.tuneguessr.domain.model.Player;
-import com.campalans.tuneguessr.domain.model.Song;
+import com.campalans.tuneguessr.domain.model.*;
 import com.campalans.tuneguessr.domain.port.in.StartGameUseCase;
+import com.campalans.tuneguessr.domain.port.in.SubmitGuessUseCase;
 import com.campalans.tuneguessr.domain.port.out.GameSessionRepositoryPort;
 import com.campalans.tuneguessr.domain.port.out.PlayerRepositoryPort;
 import com.campalans.tuneguessr.domain.port.out.SongCatalogPort;
 
 import java.util.UUID;
 
-public class GameService implements StartGameUseCase {
+public class GameService implements StartGameUseCase, SubmitGuessUseCase {
 
     private final SongCatalogPort songCatalogPort;
     private final PlayerRepositoryPort playerRepositoryPort;
@@ -30,6 +29,7 @@ public class GameService implements StartGameUseCase {
         this.scoringPolicy = scoringPolicy;
     }
 
+    @Override
     public GameSession startGame(UUID playerId) {
         Player player = playerRepositoryPort.findById(playerId)
                 .orElseThrow(() -> new IllegalArgumentException("Player not found: " + playerId));
@@ -38,11 +38,36 @@ public class GameService implements StartGameUseCase {
 
         GameSession session = GameSession.builder()
                 .id(UUID.randomUUID())
+                .playerId(playerId)
                 .song(song)
                 .guessMatcher(guessMatcher)
                 .scoringPolicy(scoringPolicy)
                 .build();
 
         return gameSessionRepositoryPort.save(session);
+    }
+
+    @Override
+    public GuessResult submitGuess(UUID sessionId, String guessText) {
+        GameSession session = gameSessionRepositoryPort.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Game session not found: " + sessionId));
+
+        GuessResult result = session.guess(guessText);
+        gameSessionRepositoryPort.save(session);
+
+        if(result.roundStatus() != RoundStatus.PLAYING){
+            updatePlayerAfterRound(session, result);
+        }
+
+        return result;
+    }
+
+    private void updatePlayerAfterRound(GameSession session, GuessResult result) {
+        Player player = playerRepositoryPort.findById(session.getPlayerId())
+                .orElseThrow(() -> new IllegalArgumentException("Player not found: " + session.getPlayerId()));
+
+        player.recordScore(result.score());
+        player.markSongAsPlayed(session.getSong().id());
+        playerRepositoryPort.save(player);
     }
 }

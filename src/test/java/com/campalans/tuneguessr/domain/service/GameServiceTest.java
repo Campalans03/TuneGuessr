@@ -1,9 +1,6 @@
 package com.campalans.tuneguessr.domain.service;
 
-import com.campalans.tuneguessr.domain.model.GameSession;
-import com.campalans.tuneguessr.domain.model.Player;
-import com.campalans.tuneguessr.domain.model.RoundStatus;
-import com.campalans.tuneguessr.domain.model.Song;
+import com.campalans.tuneguessr.domain.model.*;
 import com.campalans.tuneguessr.domain.port.out.GameSessionRepositoryPort;
 import com.campalans.tuneguessr.domain.port.out.PlayerRepositoryPort;
 import com.campalans.tuneguessr.domain.port.out.SongCatalogPort;
@@ -17,9 +14,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GameServiceTest {
@@ -34,6 +31,7 @@ class GameServiceTest {
     private GameService gameService;
 
     private final UUID playerId = UUID.randomUUID();
+    private final UUID sessionId = UUID.randomUUID();
     private final Player player = Player.builder().id(playerId).name("Jan").build();
     private final Song song = new Song("1", "Song Title", "Artist", "url");
 
@@ -61,5 +59,28 @@ class GameServiceTest {
         assertEquals(1, session.getCurrentSnippetSeconds());
         assertEquals(song, session.getSong());
         verify(gameSessionRepositoryPort).save(session);
+    }
+
+    @Test
+    void guessing_correctly_ends_the_round_and_updates_the_player() {
+        GameSession session = GameSession.builder()
+                .id(sessionId)
+                .playerId(playerId)
+                .song(song)
+                .guessMatcher(new GuessMatcher())
+                .scoringPolicy(new ScoringPolicy())
+                .build();
+
+        when(gameSessionRepositoryPort.findById(sessionId)).thenReturn(Optional.of(session));
+        when(playerRepositoryPort.findById(playerId)).thenReturn(Optional.of(player));
+
+        GuessResult result = gameService.submitGuess(sessionId, "Song Title");
+
+        assertEquals(RoundStatus.WON, result.roundStatus());
+        assertEquals(100, result.score());
+        assertEquals(100, player.getTotalScore());
+        assertTrue(player.getPlayedSongIds().contains(song.id()));
+        verify(gameSessionRepositoryPort).save(session);
+        verify(playerRepositoryPort).save(player);
     }
 }
